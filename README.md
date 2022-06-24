@@ -1,5 +1,7 @@
 # Username-Generator
 Generates usernames for games like ROBLOX, Minecraft and some social media.
+## Exploit Version
+Works for ROBLOX Cheats/Exploits.
 ## Tested
 This program was tested by the Owner.
 ## Safe
