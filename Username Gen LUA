@@ -1,0 +1,157 @@
+-- Lua username generator
+-- Free 2022
+local Settings = {
+	AutoCopy = true; -- Automically copying the username that was generated.
+	-- ^ Reccomended if you are lazy.
+}
+
+function protectGui(obj)
+	obj.Parent = gethui()
+end
+
+function checkifAvailable(user: string)
+	local nameLength = #user
+	local id
+
+	local suc,err = pcall(function()
+		id = game.Players:GetUserIdFromNameAsync(user)
+	end)
+
+	if suc == true then
+		return false
+	elseif suc == false then
+		return true
+	end
+end
+
+function RandomTexts(n: number): string
+	local z = {"a","A","b","B","c","D","e","E","f","F","g","G","h","H","i","J","k","K","l","L","m","M","n","N","o","O","p","P","r","R","s","S","t","T","v","V","x","X","y","Y","z","Z","1","2","3","4","5","6","7","8","9"}
+	local c = {}
+	for i = 1, n do
+		table.insert(c,z[math.random(#z)])
+	end
+	return table.concat(c)
+end
+
+function GenerateUsername(length: number): string
+	local user = nil
+	local done = false
+	repeat
+		user = tostring(RandomTexts(length))
+		if checkifAvailable(user) == false then
+			user = tostring(RandomTexts(length))
+		else
+			if checkifAvailable(user) == true then
+				done = true
+			end
+		end
+		game:GetService("RunService").Heartbeat:wait()
+	until done == true
+	return user
+end
+
+function createInstance(instance,properties)
+	local inst = Instance.new(instance)
+	for i,v in pairs(properties) do
+		inst[i] = v
+	end
+	return inst
+end
+
+function Run()
+
+	local Gui = createInstance("ScreenGui", {
+		Name = RandomTexts(math.random(90,170));
+	})
+	local Gen = createInstance("Frame", {
+		Name = RandomTexts(math.random(90,170));
+		Parent = Gui;
+		BackgroundColor3 = Color3.fromRGB(21,21,21);
+		Position = UDim2.new(0.364098847, 0, 0.349044591, 0);
+		Size = UDim2.new(0, 373, 0, 236);
+		Active = true;
+		Draggable = true;
+	})
+	local UICorner = createInstance("UICorner", {
+		Name = RandomTexts(math.random(90,170));
+		CornerRadius = UDim.new(0,12);
+		Parent = Gen;
+	})
+	local Title = createInstance("TextLabel", {
+		Name = RandomTexts(math.random(90,170));
+		Parent = Gen;
+		BackgroundColor3 = Color3.fromRGB(255,255,255);
+		Position = UDim2.new(0.0425603092, 0, 0.0308593214, 0);
+		Size = UDim2.new(0, 342, 0, 31);
+		Font = Enum.Font.GothamMedium;
+		Text = "Username Generator";
+		TextColor3 = Color3.fromRGB(223,223,223);
+		TextScaled = true;
+		TextSize = 14.00;
+		TextWrapped = true;
+		BackgroundTransparency = 1;
+	})
+	local Length = createInstance("TextBox", {
+		Name = RandomTexts(math.random(90,170));
+		Parent = Gen;
+		BackgroundColor3 = Color3.fromRGB(90,90,90);
+		BorderSizePixel = 0;
+		Position = UDim2.new(0.0425603203, 0, 0.199152544, 0);
+		Size = UDim2.new(0,342,0,51);
+		Font = Enum.Font.GothamMedium;
+		PlaceholderColor3 = Color3.fromRGB(226,226,226);
+		PlaceholderText = "Length here. (7 is default)";
+		Text = "";
+		TextColor3 = Color3.fromRGB(255,255,255);
+		TextSize = 14.00;
+	})
+	local Username = createInstance("TextLabel", {
+		Name = RandomTexts(math.random(90,170));
+		Parent = Gen;
+		BackgroundColor3 = Color3.fromRGB(255,255,255);
+		BackgroundTransparency = 1.000;
+		BorderColor3 = Color3.fromRGB(27,42,53);
+		Position = UDim2.new(0.0425603203, 0, 0.492723763, 0);
+		Size = UDim2.new(0, 342, 0, 32);
+		Font = Enum.Font.GothamMedium;
+		TextColor3 = Color3.fromRGB(223,223,223);
+		TextScaled = true;
+		TextSize = 14.000;
+		TextWrapped = true;
+		TextXAlignment = Enum.TextXAlignment.Left
+	})
+	local Generate = createInstance("TextButton", {
+		Name = RandomTexts(math.random(90,170));
+		Parent = Gen;
+		BackgroundColor3 = Color3.new(255,255,255);
+		BackgroundTransparency = 0.600;
+		Position = UDim2.new(0.040214479, 0, 0.686440706, 0);
+		Size = UDim2.new(0, 341, 0, 58);
+		Font = Enum.Font.GothamMedium;
+		Text = "Generate";
+		TextColor3 = Color3.fromRGB(255,255,255);
+		TextSize = 36.000;
+		TextWrapped = true;
+	})
+
+	local len = 7
+	local user = "N/a"
+
+	Length:GetPropertyChangedSignal("Text"):Connect(function()
+		len = tonumber(Length.Text)
+	end)
+
+	Generate.MouseButton1Click:Connect(function()
+		Username.Text = "Generating"
+		user = GenerateUsername(len)
+		setclipboard(user)
+	end)
+	
+	Gui.Parent = game.CoreGui
+	
+	while wait() do
+		Username.Text = "Username: "..user
+	end
+end
+
+Run()
