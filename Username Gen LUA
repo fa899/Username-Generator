@@ -5,8 +5,38 @@ local Settings = {
 	-- ^ Reccomended if you are lazy.
 }
 
+local Protecting = {}
+
+local setclipboardSupported = ((setclipboard ~= nil and true) or (setclipboard == nil and false))
+
+if (setclipboardSupported == false) then
+	game.Players.LocalPlayer:Kick("I am sorry, but setclipboard() is not supported for your executor. Please try using an other exploit.")
+end
+
+if (hookfunction ~= nil) then
+	hookfunction(game.DescendantAdded.Connect,newcclosure(function(self,...)
+		local args = {...}
+		if (self:IsA("ScreenGui") and args[1] == "Parent" or args[2] == "Parent") then
+			for i,v in pairs(Protecting) do
+				if self == v then
+					args[1] = "nil"
+					args[2] = "nil"
+					return (self and args)
+				end
+			end
+		end
+	end))
+end
+
 function protectGui(obj)
-	obj.Parent = gethui()
+	local hui = ((gethui ~= nil and true) or (gethui == nil and false))
+	if (hui == true) then
+		obj.Parent = gethui()
+		table.insert(Protecting,obj)
+	elseif (hui == false) then
+		obj.Parent = CoreGui
+		table.Insert(Protecting,obj)
+	end
 end
 
 function checkifAvailable(user: string)
@@ -145,12 +175,12 @@ function Run()
 		Username.Text = "Generating"
 		user = GenerateUsername(len)
 		if Settings.AutoCopy == true then
-		    setclipboard(tostring(user))
+			setclipboard(tostring(user))
 		end
 	end)
-	
-	Gui.Parent = game.CoreGui
-	
+
+	protectGui(Gui)
+
 	game:GetService("RunService").RenderStepped:Connect(function()
 		Username.Text = "Username: "..user
 	end)
