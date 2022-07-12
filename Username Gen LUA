@@ -144,14 +144,16 @@ function Run()
 	Generate.MouseButton1Click:Connect(function()
 		Username.Text = "Generating"
 		user = GenerateUsername(len)
-		setclipboard(user)
+		if Settings.AutoCopy == true then
+		    setclipboard(tostring(user))
+		end
 	end)
 	
 	Gui.Parent = game.CoreGui
 	
-	while wait() do
+	game:GetService("RunService").RenderStepped:Connect(function()
 		Username.Text = "Username: "..user
-	end
+	end)
 end
 
 Run()
